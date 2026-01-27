@@ -35,15 +35,15 @@ export class SubjectsService {
       };
     }
 
-    const [data, total] = await this.prisma.$transaction([
-      this.prisma.subjects.findMany({
+    const [data, total] = await Promise.all([
+      this.prisma.subject.findMany({
         where,
         include: { department: true },
         orderBy: { createdAt: 'desc' },
         skip,
         take: limit,
       }),
-      this.prisma.subjects.count({ where }),
+      this.prisma.subject.count({ where }),
     ]);
 
     return {

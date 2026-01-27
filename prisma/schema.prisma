@@ -11,28 +11,141 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  
-} 
-
-model Departments {
-  id Int @default(autoincrement()) @id
-  code String @unique @db.VarChar(50)
-  name String @db.VarChar(255)
-  description String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  subjects Subjects[]
 }
 
-model Subjects {
-  id Int @default(autoincrement()) @id
-  code String @unique @db.VarChar(50)
-  name String @db.VarChar(255) 
+enum Role {
+  student 
+  teacher
+  admin
+}
+
+enum ClassStatus {
+  active
+  inactive
+  archived
+}
+
+model Department {
+  id          Int      @default(autoincrement()) @id
+  code        String   @unique @db.VarChar(50)
+  name        String   @db.VarChar(255)
   description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subjects Subject[]
+}
+
+model Subject {
+  id           Int         @id @default(autoincrement())
+  departmentId Int
+  name         String
+  code         String      @unique
+  description  String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  department   Department  @relation(fields: [departmentId], references: [id])
+  classes      Class[]
+}
+
+model Class {
+  id            Int          @id @default(autoincrement())
+  subjectId     Int
+  teacherId     String
+  inviteCode    String       @unique
+  name          String
+  bannerCldPubId String?
+  bannerUrl     String?
+  capacity      Int          @default(50)
+  description   String?
+  status        ClassStatus  @default(active)
+  schedules     Json
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  subject       Subject      @relation(fields: [subjectId], references: [id])
+  teacher       User         @relation("TeacherClasses", fields: [teacherId], references: [id])
+  enrollments   Enrollment[]
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  studentId String
+  classId   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  department Departments @relation(fields: [departmentId], references: [id])
-  departmentId Int
+  student   User     @relation("StudentEnrollments", fields: [studentId], references: [id])
+  class     Class    @relation(fields: [classId], references: [id])
+
+  @@index([studentId])
+  @@index([classId])
+  @@unique([studentId, classId])
+}
+
+model User {
+  id             String    @id
+  name           String
+  email          String
+  emailVerified  Boolean
+  image          String?
+  role           Role      @default(student)
+  imageCldPubId  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  sessions       Session[]
+  accounts       Account[]
+  classes        Class[]      @relation("TeacherClasses")
+  enrollments    Enrollment[] @relation("StudentEnrollments")
+}
+
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
