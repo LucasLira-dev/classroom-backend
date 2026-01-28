@@ -34,7 +34,7 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
         }),
         slidingWindow({
           mode: 'LIVE',
-          interval: '2s', // 1 minute
+          interval: '1m',
           max: 5,
         }),
       ],
