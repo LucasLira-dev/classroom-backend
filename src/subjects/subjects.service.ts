@@ -53,8 +53,8 @@ export class SubjectsService {
         limit,
         total,
         totalPages: Math.ceil(total / limit),
-      }
-    }
+      },
+    };
   }
 
   findOne(id: number) {

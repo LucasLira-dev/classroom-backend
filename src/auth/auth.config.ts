@@ -22,12 +22,12 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
-  
+
   // Configuração de autenticação por email/senha
   emailAndPassword: {
     enabled: true,
   },
-  
+
   // Você pode adicionar providers sociais aqui
   socialProviders: {
     // github: {
@@ -35,16 +35,16 @@ export const auth = betterAuth({
     //   clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     // },
   },
-  
+
   // Base path para as rotas de autenticação
   basePath: '/api/auth',
-  
+
   // URL base da aplicação
   baseURL: process.env.BETTER_AUTH_URL,
-  
+
   // Secret para criptografia
   secret: process.env.BETTER_AUTH_SECRET,
-  
+
   // Hooks (opcional) - necessário para usar @Hook() decorator
   hooks: {},
 });
