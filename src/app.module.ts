@@ -6,6 +6,10 @@ import { PrismaService } from './prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import { ArcjetModule, ArcjetGuard, detectBot, shield, slidingWindow } from '@arcjet/nest';
 import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from '@thallesp/nestjs-better-auth';
+import { auth } from './auth/auth.config';
+import { UsersModule } from './users/users.module';
+import { ClassesModule } from './classes/classes.module';
 import 'dotenv/config';
 
 if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
@@ -14,6 +18,7 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
 
 @Module({
   imports: [
+    // AuthModule.forRoot({ auth }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -40,6 +45,8 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
       ],
     }),
     SubjectsModule,
+    UsersModule,
+    ClassesModule,
   ],
   controllers: [AppController],
   providers: [
