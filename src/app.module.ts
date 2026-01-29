@@ -18,7 +18,7 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
 
 @Module({
   imports: [
-    // AuthModule.forRoot({ auth }),
+    AuthModule.forRoot({ auth }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -40,7 +40,7 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
         slidingWindow({
           mode: 'LIVE',
           interval: '1m',
-          max: 5,
+          max: 8,
         }),
       ],
     }),

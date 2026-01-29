@@ -12,6 +12,10 @@ if (!connectionString) {
   throw new Error('DATABASE_URL environment variable is not defined.');
 }
 
+if (!process.env.FRONTEND_URL) {
+  throw new Error('FRONTEND_URL environment variable is not defined.');
+}
+
 const pool = new Pool({ connectionString });
 
 // Criar adapter do Prisma com driver Neon
@@ -49,6 +53,12 @@ export const auth = betterAuth({
   basePath: '/api/auth',
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
+  trustedOrigins: [process.env.FRONTEND_URL],
+  cookie: {
+    secure: false,
+    sameSite: 'lax',
+  },
+  
 
   hooks: {},
 });

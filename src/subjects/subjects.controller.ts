@@ -9,12 +9,15 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { SubjectsService } from './subjects.service';
 import { CreateSubjectDto } from './dto/create-subject.dto';
 import { UpdateSubjectDto } from './dto/update-subject.dto';
+import { AuthGuard } from '@thallesp/nestjs-better-auth';
 
 @Controller('subjects')
+@UseGuards(AuthGuard)
 export class SubjectsController {
   constructor(private readonly subjectsService: SubjectsService) {}
 
