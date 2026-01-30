@@ -41,8 +41,8 @@ export const auth = betterAuth({
         type: 'string',
         required: false,
         input: true,
-      }
-    }
+      },
+    },
   },
   socialProviders: {
     // github: {
@@ -58,7 +58,6 @@ export const auth = betterAuth({
     secure: false,
     sameSite: 'lax',
   },
-  
 
   hooks: {},
 });

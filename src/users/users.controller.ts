@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, DefaultValuePipe, ParseIntPipe, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,15 +18,20 @@ import { UpdateUserDto } from './dto/update-user.dto';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-   
+
   @Get()
   async findAll(
     @Query('search') search?: string,
     @Query('role') role?: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
-  ){
-    const result = await this.usersService.findAll({ search, role, page, limit });
+  ) {
+    const result = await this.usersService.findAll({
+      search,
+      role,
+      page,
+      limit,
+    });
     return result;
   }
 
@@ -25,7 +42,7 @@ export class UsersController {
     return { data: user };
   }
 
-   @Get(':id/departments')
+  @Get(':id/departments')
   async getDepartments(
     @Param('id') id: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,

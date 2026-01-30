@@ -2,22 +2,24 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 
 type userType = {
-  id: number; 
-  code: string; 
-  name: string; 
-  description: string | null; 
-  createdAt: Date; 
-  updatedAt: Date; 
-}
+  id: number;
+  code: string;
+  name: string;
+  description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 @Injectable()
 export class UsersService {
+  constructor(private readonly prisma: PrismaService) {}
 
-  constructor(
-    private readonly prisma: PrismaService
-  ) {}
-
-  async findAll(params: {search?: string; role?: string; page: number; limit: number;}) {
+  async findAll(params: {
+    search?: string;
+    role?: string;
+    page: number;
+    limit: number;
+  }) {
     const { search, role, page, limit } = params;
 
     const where: any = {};
@@ -34,10 +36,10 @@ export class UsersService {
     const totalCount = await this.prisma.user.count({ where });
     const userList = await this.prisma.user.findMany({
       where,
-      orderBy: { createdAt: 'desc'},
+      orderBy: { createdAt: 'desc' },
       skip: (page - 1) * limit,
       take: limit,
-    })
+    });
 
     return {
       data: userList,
@@ -45,22 +47,22 @@ export class UsersService {
         page,
         limit,
         total: totalCount,
-        totalPages: Math.ceil(totalCount / limit)
-      }
-    }
-  };
+        totalPages: Math.ceil(totalCount / limit),
+      },
+    };
+  }
 
   async findOne(id: string) {
     return await this.prisma.user.findFirst({
       where: { id },
-    })
+    });
   }
 
   async getDepartments(userId: string, page: number, limit: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, role: true },  
-    })
+      select: { id: true, role: true },
+    });
 
     if (!user) throw new NotFoundException('User not found');
 
@@ -71,10 +73,10 @@ export class UsersService {
           page: 1,
           limit: 0,
           total: 0,
-          totalPages: 0
-        }
-      }
-    };
+          totalPages: 0,
+        },
+      };
+    }
 
     let departmentsList: userType[] = [];
     let totalCount = 0;
@@ -86,11 +88,11 @@ export class UsersService {
             some: {
               classes: {
                 some: {
-                  teacherId: userId
-                }
-              }
-            }
-          }
+                  teacherId: userId,
+                },
+              },
+            },
+          },
         },
         distinct: ['id'],
         orderBy: { createdAt: 'desc' },
@@ -104,11 +106,11 @@ export class UsersService {
             some: {
               classes: {
                 some: {
-                  teacherId: userId
-                }
-              }
-            }
-          }
+                  teacherId: userId,
+                },
+              },
+            },
+          },
         },
       });
     } else {
@@ -120,13 +122,13 @@ export class UsersService {
                 some: {
                   enrollments: {
                     some: {
-                      studentId: userId
-                    }
-                  }
-                }
-              }
-            }
-          }
+                      studentId: userId,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
         distinct: ['id'],
         orderBy: { createdAt: 'desc' },
@@ -142,15 +144,15 @@ export class UsersService {
                 some: {
                   enrollments: {
                     some: {
-                      studentId: userId
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      })
+                      studentId: userId,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
     }
 
     return {
@@ -159,16 +161,16 @@ export class UsersService {
         page,
         limit,
         total: totalCount,
-        totalPages: Math.ceil(totalCount / limit)
-      }
-    }
+        totalPages: Math.ceil(totalCount / limit),
+      },
+    };
   }
 
   async getSubjects(userId: string, page: number, limit: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, role: true },  
-    })
+      select: { id: true, role: true },
+    });
 
     if (!user) throw new NotFoundException('User not found');
 
@@ -179,9 +181,9 @@ export class UsersService {
           page: 1,
           limit: 0,
           total: 0,
-          totalPages: 0
-        }
-      }
+          totalPages: 0,
+        },
+      };
     }
 
     let subjectsList: userType[] = [];
@@ -192,25 +194,25 @@ export class UsersService {
         where: {
           classes: {
             some: {
-              teacherId: userId
-            }
-          }
+              teacherId: userId,
+            },
+          },
         },
         distinct: ['id'],
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: (page - 1) * limit,
-      })
+      });
       subjectsList = subjects;
       totalCount = await this.prisma.subject.count({
         where: {
           classes: {
             some: {
               teacherId: userId,
-            }
-          }
-        }
-      })
+            },
+          },
+        },
+      });
     } else {
       const subjects = await this.prisma.subject.findMany({
         where: {
@@ -218,17 +220,17 @@ export class UsersService {
             some: {
               enrollments: {
                 some: {
-                  studentId: userId
-                }
-              }
-            }
-          }
+                  studentId: userId,
+                },
+              },
+            },
+          },
         },
         distinct: ['id'],
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: (page - 1) * limit,
-      })
+      });
       subjectsList = subjects;
       totalCount = await this.prisma.subject.count({
         where: {
@@ -236,13 +238,13 @@ export class UsersService {
             some: {
               enrollments: {
                 some: {
-                  studentId: userId
-                }
-              }
-            }
-          }
-        }
-      })
+                  studentId: userId,
+                },
+              },
+            },
+          },
+        },
+      });
     }
 
     return {
@@ -251,8 +253,8 @@ export class UsersService {
         page,
         limit,
         total: totalCount,
-        totalPages: Math.ceil(totalCount / limit)
-      }
-    }
+        totalPages: Math.ceil(totalCount / limit),
+      },
+    };
   }
 }

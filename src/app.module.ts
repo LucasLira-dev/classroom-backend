@@ -4,7 +4,13 @@ import { AppService } from './app.service';
 import { SubjectsModule } from './subjects/subjects.module';
 import { PrismaService } from './prisma.service';
 import { ConfigModule } from '@nestjs/config';
-import { ArcjetModule, ArcjetGuard, detectBot, shield, slidingWindow } from '@arcjet/nest';
+import {
+  ArcjetModule,
+  ArcjetGuard,
+  detectBot,
+  shield,
+  slidingWindow,
+} from '@arcjet/nest';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './auth/auth.config';
