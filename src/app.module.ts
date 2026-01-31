@@ -46,7 +46,7 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
         slidingWindow({
           mode: 'LIVE',
           interval: '1m',
-          max: 8,
+          max: 40, // max 40 requests
         }),
       ],
     }),

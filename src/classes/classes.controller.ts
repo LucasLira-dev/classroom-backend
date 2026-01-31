@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   ForbiddenException,
   Query,
   DefaultValuePipe,
@@ -13,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from './dto/create-class.dto';
-import { UpdateClassDto } from './dto/update-class.dto';
 import { Session, UserSession } from '@thallesp/nestjs-better-auth';
 
 @Controller('classes')
@@ -43,7 +40,13 @@ export class ClassesController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ) {
-    return this.classesService.findAll({ search, department, subject, page, limit });
+    return this.classesService.findAll({
+      search,
+      department,
+      subject,
+      page,
+      limit,
+    });
   }
 
   @Get(':id')
@@ -51,13 +54,17 @@ export class ClassesController {
     return this.classesService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClassDto: UpdateClassDto) {
-    return this.classesService.update(+id, updateClassDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.classesService.remove(+id);
+  @Get(':id/users')
+  async getClassUsers(
+    @Param('id') id: string,
+    @Query('role') role: 'teacher' | 'student',
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ) {
+    try {
+      return await this.classesService.getClassUsers(+id, role, page, limit);
+    } catch (error) {
+      return { error: error.message }
+    }
   }
 }
