@@ -50,8 +50,9 @@ export class ClassesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.classesService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const classDetails = await this.classesService.findOne(+id);
+    return { data: classDetails };
   }
 
   @Get(':id/users')

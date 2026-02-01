@@ -52,7 +52,7 @@ export class SubjectsService {
       })
 
       return {
-        ...subject,
+        data: subject,
       }
     }
 
