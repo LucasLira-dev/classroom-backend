@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateClassDto } from './dto/create-class.dto';
 import { PrismaService } from 'src/prisma.service';
 
@@ -96,17 +96,15 @@ export class ClassesService {
     page: number,
     limit: number,
   ) {
-
     if (!Number.isFinite(classId)) {
       throw new NotFoundException(`Class with ID ${classId} not found`);
     }
 
     if (role !== 'teacher' && role !== 'student') {
-      throw new NotFoundException(`Role must be either 'teacher' or 'student'`);
+      throw new BadRequestException(`Role must be either 'teacher' or 'student'`);
     }
 
     const skip = (page - 1) * limit;
-
 
     if (role === 'teacher') {
       const classDetails = await this.prisma.class.findUnique({
@@ -114,7 +112,8 @@ export class ClassesService {
         include: { teacher: true },
       });
 
-      const teachersList = classDetails && classDetails.teacher ? [classDetails.teacher] : [];
+      const teachersList =
+        classDetails && classDetails.teacher ? [classDetails.teacher] : [];
 
       return {
         data: teachersList,
@@ -155,6 +154,5 @@ export class ClassesService {
         totalPages: Math.ceil(totalStudents / limit),
       },
     };
-
   }
 }

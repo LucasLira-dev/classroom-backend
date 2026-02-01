@@ -16,6 +16,7 @@ import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './auth/auth.config';
 import { UsersModule } from './users/users.module';
 import { ClassesModule } from './classes/classes.module';
+import { DepartmentsModule } from './departments/departments.module';
 import 'dotenv/config';
 
 if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
@@ -53,6 +54,7 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
     SubjectsModule,
     UsersModule,
     ClassesModule,
+    DepartmentsModule,
   ],
   controllers: [AppController],
   providers: [

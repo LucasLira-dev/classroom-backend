@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Query,
   DefaultValuePipe,
   ParseIntPipe,
@@ -36,18 +34,27 @@ export class SubjectsController {
     return this.subjectsService.findAll({ search, department, page, limit });
   }
 
+  @Get(':id/classes')
+  findSubjectClasses(
+    @Param('id') id: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ) {
+    return this.subjectsService.findSubjectClasses(+id, page, limit);
+  }
+
+  @Get(':id/users')
+  findUsersInSubject(
+    @Param('id') id: string,
+    @Query('role') role: 'teacher' | 'student',
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ){
+    return this.subjectsService.findUsersInSubject(+id, role, page, limit);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.subjectsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubjectDto: UpdateSubjectDto) {
-    return this.subjectsService.update(+id, updateSubjectDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subjectsService.remove(+id);
   }
 }

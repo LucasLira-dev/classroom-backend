@@ -64,7 +64,7 @@ export class ClassesController {
     try {
       return await this.classesService.getClassUsers(+id, role, page, limit);
     } catch (error) {
-      return { error: error.message }
+      return { error: error.message };
     }
   }
 }

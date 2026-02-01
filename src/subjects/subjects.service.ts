@@ -1,15 +1,60 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSubjectDto } from './dto/create-subject.dto';
-import { UpdateSubjectDto } from './dto/update-subject.dto';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class SubjectsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createSubjectDto: CreateSubjectDto) {
-    return 'This action adds a new subject';
+  async create(createSubjectDto: CreateSubjectDto) {
+    const SubjectNameExists = await this.prisma.subject.findFirst({
+      where: { name: createSubjectDto.name },
+    });
+
+    if (SubjectNameExists) {
+      throw new ConflictException('Subject with this name already exists');
+    }
+
+    const SubjectCodeExists = await this.prisma.subject.findFirst({
+      where: { code: createSubjectDto.code },
+    });
+
+    if (SubjectCodeExists) {
+      throw new ConflictException('Subject with this code already exists');
+    }
+
+    return this.prisma.subject.create({
+      data: createSubjectDto,
+    });
   }
+
+  async findOne(id: number) {
+      if (!Number.isFinite(id)) {
+        throw new NotFoundException('Invalid subject ID');
+      }
+
+      const subject = await this.prisma.subject.findUnique({
+        where: { id },
+        include: { department: true },
+      })
+
+      if (!subject) {
+        throw new NotFoundException('Subject not found');
+      }
+
+      const classesCount = await this.prisma.class.count({
+        where: { subjectId: id },
+      })
+
+      return {
+        ...subject,
+      }
+    }
 
   async findAll(params: {
     search?: string;
@@ -57,15 +102,103 @@ export class SubjectsService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} subject`;
+  async findSubjectClasses(id: number, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    if (!Number.isFinite(id)) {
+      throw new NotFoundException('Invalid subject ID');
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.class.findMany({
+        where: { subjectId: id },
+        include: { teacher: true, subject: true },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.class.count({ where: { subjectId: id } }),
+    ]);
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
-  update(id: number, updateSubjectDto: UpdateSubjectDto) {
-    return `This action updates a #${id} subject`;
-  }
+  async findUsersInSubject(id: number, role: 'teacher' | 'student', page: number, limit: number) {
+    const skip = (page - 1) * limit;
 
-  remove(id: number) {
-    return `This action removes a #${id} subject`;
+    if (!Number.isFinite(id)) {
+      throw new NotFoundException('Invalid subject ID');
+    }
+
+    if (role !== 'teacher' && role !== 'student') {
+      throw new BadRequestException(`Role must be either 'teacher' or 'student'`);
+    }
+    
+
+    const countResult = role === 'teacher' ? await this.prisma.user.count({
+      where: {
+        classes: {
+          some: {
+            subjectId: id,
+          },
+        }
+      }
+    }) : await this.prisma.user.count({
+      where: {
+        enrollments: {
+          some: {
+            class: {
+              subjectId: id,
+            }
+          }
+        }
+      } 
+    }); 
+
+    const totalCount = countResult;
+
+    const usersList = role === 'teacher' ? await this.prisma.user.findMany({
+      where: {
+        classes: {
+          some: {
+            subjectId: id,
+          }
+        }
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    }) : await this.prisma.user.findMany({
+      where: {
+        enrollments: {
+          some: {
+            class: {
+              subjectId: id,
+            }
+          }
+        },
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return {
+      data: usersList,
+      pagination: {
+        page,
+        limit,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+      },
+    };
   }
 }
