@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateClassDto } from './dto/create-class.dto';
 import { PrismaService } from 'src/prisma.service';
 
@@ -101,7 +105,9 @@ export class ClassesService {
     }
 
     if (role !== 'teacher' && role !== 'student') {
-      throw new BadRequestException(`Role must be either 'teacher' or 'student'`);
+      throw new BadRequestException(
+        `Role must be either 'teacher' or 'student'`,
+      );
     }
 
     const skip = (page - 1) * limit;

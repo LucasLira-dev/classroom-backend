@@ -49,7 +49,7 @@ export class SubjectsController {
     @Query('role') role: 'teacher' | 'student',
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
-  ){
+  ) {
     return this.subjectsService.findUsersInSubject(+id, role, page, limit);
   }
 

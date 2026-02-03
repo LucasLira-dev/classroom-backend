@@ -34,27 +34,27 @@ export class SubjectsService {
   }
 
   async findOne(id: number) {
-      if (!Number.isFinite(id)) {
-        throw new NotFoundException('Invalid subject ID');
-      }
-
-      const subject = await this.prisma.subject.findUnique({
-        where: { id },
-        include: { department: true },
-      })
-
-      if (!subject) {
-        throw new NotFoundException('Subject not found');
-      }
-
-      const classesCount = await this.prisma.class.count({
-        where: { subjectId: id },
-      })
-
-      return {
-        data: subject,
-      }
+    if (!Number.isFinite(id)) {
+      throw new NotFoundException('Invalid subject ID');
     }
+
+    const subject = await this.prisma.subject.findUnique({
+      where: { id },
+      include: { department: true },
+    });
+
+    if (!subject) {
+      throw new NotFoundException('Subject not found');
+    }
+
+    const classesCount = await this.prisma.class.count({
+      where: { subjectId: id },
+    });
+
+    return {
+      data: subject,
+    };
+  }
 
   async findAll(params: {
     search?: string;
@@ -131,7 +131,12 @@ export class SubjectsService {
     };
   }
 
-  async findUsersInSubject(id: number, role: 'teacher' | 'student', page: number, limit: number) {
+  async findUsersInSubject(
+    id: number,
+    role: 'teacher' | 'student',
+    page: number,
+    limit: number,
+  ) {
     const skip = (page - 1) * limit;
 
     if (!Number.isFinite(id)) {
@@ -139,57 +144,64 @@ export class SubjectsService {
     }
 
     if (role !== 'teacher' && role !== 'student') {
-      throw new BadRequestException(`Role must be either 'teacher' or 'student'`);
+      throw new BadRequestException(
+        `Role must be either 'teacher' or 'student'`,
+      );
     }
-    
 
-    const countResult = role === 'teacher' ? await this.prisma.user.count({
-      where: {
-        classes: {
-          some: {
-            subjectId: id,
-          },
-        }
-      }
-    }) : await this.prisma.user.count({
-      where: {
-        enrollments: {
-          some: {
-            class: {
-              subjectId: id,
-            }
-          }
-        }
-      } 
-    }); 
+    const countResult =
+      role === 'teacher'
+        ? await this.prisma.user.count({
+            where: {
+              classes: {
+                some: {
+                  subjectId: id,
+                },
+              },
+            },
+          })
+        : await this.prisma.user.count({
+            where: {
+              enrollments: {
+                some: {
+                  class: {
+                    subjectId: id,
+                  },
+                },
+              },
+            },
+          });
 
     const totalCount = countResult;
 
-    const usersList = role === 'teacher' ? await this.prisma.user.findMany({
-      where: {
-        classes: {
-          some: {
-            subjectId: id,
-          }
-        }
-      },
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    }) : await this.prisma.user.findMany({
-      where: {
-        enrollments: {
-          some: {
-            class: {
-              subjectId: id,
-            }
-          }
-        },
-      },
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    })
+    const usersList =
+      role === 'teacher'
+        ? await this.prisma.user.findMany({
+            where: {
+              classes: {
+                some: {
+                  subjectId: id,
+                },
+              },
+            },
+            skip,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+          })
+        : await this.prisma.user.findMany({
+            where: {
+              enrollments: {
+                some: {
+                  class: {
+                    subjectId: id,
+                  },
+                },
+              },
+            },
+            skip,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+          });
 
     return {
       data: usersList,
