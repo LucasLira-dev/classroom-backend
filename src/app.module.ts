@@ -17,6 +17,7 @@ import { auth } from './auth/auth.config';
 import { UsersModule } from './users/users.module';
 import { ClassesModule } from './classes/classes.module';
 import { DepartmentsModule } from './departments/departments.module';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
 import 'dotenv/config';
 
 if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
@@ -55,6 +56,7 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
     UsersModule,
     ClassesModule,
     DepartmentsModule,
+    EnrollmentsModule,
   ],
   controllers: [AppController],
   providers: [
