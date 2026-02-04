@@ -198,6 +198,9 @@ export class UsersService {
             },
           },
         },
+        include: {
+          department: true,
+        },
         distinct: ['id'],
         orderBy: { createdAt: 'desc' },
         take: limit,
@@ -225,6 +228,9 @@ export class UsersService {
               },
             },
           },
+        },
+        include: {
+          department: true,
         },
         distinct: ['id'],
         orderBy: { createdAt: 'desc' },

@@ -83,23 +83,12 @@ export class EnrollmentsService {
 
     const trimmedInviteCode = inviteCode.trim();
 
-    const existingSubject = await this.prisma.subject.findFirst({
-      where: { code: trimmedInviteCode },
-    });
-
-    if (!existingSubject) {
-      throw new BadRequestException('Invalid invite code///');
-    }
-
     const existingClass = await this.prisma.class.findFirst({
-      where: { 
-        subjectId: existingSubject.id,
-        status: 'active',
-      },
-    });
+      where: { inviteCode: trimmedInviteCode, status: 'active' },
+    })
 
     if (!existingClass) {
-      throw new BadRequestException('No active class found for this subject');
+      throw new BadRequestException('Invalid invite code');
     }
 
     const existingStudent = await this.prisma.user.findUnique({
@@ -135,3 +124,5 @@ export class EnrollmentsService {
     };
   }
 }
+
+  
