@@ -16,6 +16,8 @@ if (!process.env.FRONTEND_URL) {
   throw new Error('FRONTEND_URL environment variable is not defined.');
 }
 
+const frontendUrl = process.env.FRONTEND_URL.replace(/\/$/, "");
+
 const pool = new Pool({ connectionString });
 
 // Criar adapter do Prisma com driver Neon
@@ -44,7 +46,7 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: [process.env.FRONTEND_URL],
+  trustedOrigins: [frontendUrl],
   advanced: {
     defaultCookieAttributes: {
       sameSite: 'None',
@@ -60,11 +62,6 @@ export const auth = betterAuth({
   basePath: '/api/auth',
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    domain: undefined, // Não definir domínio para permitir cross-origin
-  },
 
   hooks: {},
 });
