@@ -33,6 +33,7 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
     ArcjetModule.forRoot({
       isGlobal: true,
       key: process.env.ARCJET_KEY!,
+      characteristics: ['ip.src'],
       rules: [
         // Shield protects your app from common attacks e.g. SQL injection
         shield({ mode: 'LIVE' }),
