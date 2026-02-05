@@ -44,6 +44,13 @@ export const auth = betterAuth({
       },
     },
   },
+  trustedOrigins: [process.env.FRONTEND_URL],
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: 'None',
+      secure: true,
+    },
+  },
   socialProviders: {
     // github: {
     //   clientId: process.env.GITHUB_CLIENT_ID!,
@@ -53,13 +60,6 @@ export const auth = betterAuth({
   basePath: '/api/auth',
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
-  trustedOrigins: [process.env.FRONTEND_URL],
-  advanced: {
-    useSecureCookies: process.env.NODE_ENV === 'production',
-    crossSubDomainCookies: {
-      enabled: true,
-    },
-  },
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
