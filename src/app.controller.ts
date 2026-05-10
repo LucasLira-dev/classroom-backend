@@ -12,6 +12,7 @@ export class AppController {
   }
 
   @AllowAnonymous()
+  @Get('health')
   @Head('health')
   healthCheck() {
     return {
