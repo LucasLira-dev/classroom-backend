@@ -16,7 +16,7 @@ if (!process.env.FRONTEND_URL) {
   throw new Error('FRONTEND_URL environment variable is not defined.');
 }
 
-const frontendUrl = process.env.FRONTEND_URL.replace(/\/$/, "");
+const frontendUrl = process.env.FRONTEND_URL.replace(/\/$/, '');
 
 const pool = new Pool({ connectionString });
 

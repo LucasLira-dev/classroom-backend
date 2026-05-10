@@ -7,12 +7,9 @@ async function bootstrap() {
     bodyParser: false,
   });
 
-  const frontendUrl = process.env.FRONTEND_URL?.replace(/\/$/, "");
+  const frontendUrl = process.env.FRONTEND_URL?.replace(/\/$/, '');
 
-  const allowedOrigins = [
-    frontendUrl,
-    'http://localhost:3000',
-  ].filter(Boolean);
+  const allowedOrigins = [frontendUrl, 'http://localhost:3000'].filter(Boolean);
 
   app.enableCors({
     origin: allowedOrigins,

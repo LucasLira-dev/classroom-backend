@@ -19,10 +19,15 @@ import { ClassesModule } from './classes/classes.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 import 'dotenv/config';
+import { CustomArcjetGuard } from './guards/arcjet.guard';
 
 if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
   throw new Error('ARCJET_KEY environment variable is not defined.');
 }
+
+const isProduction =
+  process.env.NODE_ENV === 'production' ||
+  process.env.ARCJET_ENV === 'production';
 
 @Module({
   imports: [
@@ -67,6 +72,14 @@ if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
       provide: APP_GUARD,
       useClass: ArcjetGuard,
     },
+    ...(isProduction
+      ? [
+          {
+            provide: APP_GUARD,
+            useClass: CustomArcjetGuard,
+          },
+        ]
+      : []),
   ],
 })
 export class AppModule {}

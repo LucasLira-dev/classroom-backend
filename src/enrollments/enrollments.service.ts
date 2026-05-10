@@ -85,7 +85,7 @@ export class EnrollmentsService {
 
     const existingClass = await this.prisma.class.findFirst({
       where: { inviteCode: trimmedInviteCode, status: 'active' },
-    })
+    });
 
     if (!existingClass) {
       throw new BadRequestException('Invalid invite code');
@@ -124,5 +124,3 @@ export class EnrollmentsService {
     };
   }
 }
-
-  
