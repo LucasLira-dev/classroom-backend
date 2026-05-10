@@ -22,7 +22,9 @@ export class CustomArcjetGuard implements CanActivate {
       return true;
     }
 
-    if (request.path === '/health') {
+    const requestUrl = request.originalUrl ?? request.path;
+
+    if (requestUrl?.startsWith('/health')) {
       return true;
     }
 

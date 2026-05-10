@@ -6,7 +6,6 @@ import { PrismaService } from './prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import {
   ArcjetModule,
-  ArcjetGuard,
   detectBot,
   shield,
   slidingWindow,
@@ -24,10 +23,6 @@ import { CustomArcjetGuard } from './guards/arcjet.guard';
 if (!process.env.ARCJET_KEY && process.env.ARCJET_ENV !== 'test') {
   throw new Error('ARCJET_KEY environment variable is not defined.');
 }
-
-const isProduction =
-  process.env.NODE_ENV === 'production' ||
-  process.env.ARCJET_ENV === 'production';
 
 @Module({
   imports: [
@@ -70,16 +65,8 @@ const isProduction =
     PrismaService,
     {
       provide: APP_GUARD,
-      useClass: ArcjetGuard,
+      useClass: CustomArcjetGuard,
     },
-    ...(isProduction
-      ? [
-          {
-            provide: APP_GUARD,
-            useClass: CustomArcjetGuard,
-          },
-        ]
-      : []),
   ],
 })
 export class AppModule {}
